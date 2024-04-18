@@ -7,6 +7,10 @@ Inst_set :: enum i8 {
 	PUSH,
 	POP,
 	PRINT,
+	ADD,
+	SUB,
+	MUL,
+	DIV,
 }
 
 Inst :: struct {
@@ -44,6 +48,10 @@ add_inst :: proc(inst: ^Inst) {
 
 main :: proc() {
 	add_inst(&Inst{.PUSH, 100})
+	add_inst(&Inst{.ADD, 10})
+	add_inst(&Inst{.SUB, 60})
+	add_inst(&Inst{.MUL, 4})
+	add_inst(&Inst{.DIV, 10})
 	add_inst(&Inst{.PRINT, 0})
 
 	for inst in vm.programs {
@@ -53,6 +61,23 @@ main :: proc() {
 			break
 		case .POP:
 			pop_st()
+			break
+		case .ADD:
+			push(pop_st() + inst.value)
+			break
+		case .SUB:
+			push(pop_st() - inst.value)
+			break
+		case .MUL:
+			push(pop_st() * inst.value)
+			break
+		case .DIV:
+			value := pop_st()
+			if value == 0 || inst.value == 0 {
+				fmt.eprintln("Division by 0")
+				os.exit(1)
+			}
+			push(value / inst.value)
 			break
 		case .PRINT:
 			if vm.sp <= 0 {
