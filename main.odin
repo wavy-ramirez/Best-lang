@@ -38,7 +38,7 @@ pop_st :: proc() -> i32 {
 }
 
 add_inst :: proc(inst: ^Inst) {
-	vm.programs[vm.pc] = inst
+	append(&vm.programs, inst)
 	vm.pc += 1
 }
 
@@ -55,6 +55,10 @@ main :: proc() {
 			pop_st()
 			break
 		case .PRINT:
+			if vm.sp <= 0 {
+				fmt.eprintln("Empty Stack, Inst: Print")
+				os.exit(1)
+			}
 			fmt.println(pop_st())
 			break
 		}
